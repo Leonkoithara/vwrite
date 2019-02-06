@@ -1,1 +1,1 @@
-autocmd BufReadPost *.not set filetype=not
+autocmd BufNewFile,BufRead *.rit set filetype=rit
