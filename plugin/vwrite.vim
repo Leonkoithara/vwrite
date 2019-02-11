@@ -5,8 +5,8 @@ set spell spelllang=en_gb
  
 inoremap <CR> <C-o>:call Bullets(0)<CR>
 
-nnoremap <TAB> :call IncreaseListingLevel()<CR>
-nnoremap <S-TAB> :call DecreaseListingLevel()<CR>
+nnoremap <silent> <TAB> :call IncreaseListingLevel()<CR>
+nnoremap <silent> <S-TAB> :call DecreaseListingLevel()<CR>
 
 command! -nargs=1 Heading call CreateHeading(<f-args>)
 
@@ -28,14 +28,6 @@ endfunc
 
 func! IncreaseListingLevel()
 	let g:listing = g:listing + 1
-endfunc
-
-func! NextLine()
-	if g:listing >= 1
-		execute "normal! yyplld$"
-	else
-		execute "normal! gi\<CR>"
-	endif
 endfunc
 
 func! Bullets(type)
