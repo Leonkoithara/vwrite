@@ -1,9 +1,14 @@
+let g:listing = 0 
+
 set nonumber norelativenumber
 set spell spelllang=en_gb
  
-nnoremap <h1 :call CreateHeading(1)<CR>
-nnoremap <h2 :call CreateHeading(2)<CR>
-nnoremap <h3 :call CreateHeading(3)<CR>
+inoremap <CR> <C-o>:call Bullets(0)<CR>
+
+nnoremap <TAB> :call IncreaseListingLevel()<CR>
+nnoremap <S-TAB> :call DecreaseListingLevel()<CR>
+
+command! -nargs=1 Heading call CreateHeading(<f-args>)
 
 func! CreateHeading(lvl)
 	execute "normal! yy"
@@ -14,5 +19,42 @@ func! CreateHeading(lvl)
 	elseif a:lvl ==# 3
 		execute "normal! 0i###"
 	endif
-	execute "normal! o\n"
+	execute "normal! A"
+endfunc
+
+func! DecreaseListingLevel()
+	let g:listing = g:listing - 1
+endfunc
+
+func! IncreaseListingLevel()
+	let g:listing = g:listing + 1
+endfunc
+
+func! NextLine()
+	if g:listing >= 1
+		execute "normal! yyplld$"
+	else
+		execute "normal! gi\<CR>"
+	endif
+endfunc
+
+func! Bullets(type)
+	execute "normal! gi\n"
+	let l:i = 0
+	while i < g:listing
+		execute "normal! gi\t"
+		let l:i = l:i + 1
+	endwhile
+	if a:type == 1
+		execute "normal! gi\t* "
+		let g:listing = g:listing + 1
+	else
+		if g:listing > 0
+			execute "normal! gi* "
+		endif
+	endif
+endfunc
+
+func! EchoListing()
+	:echo g:listing
 endfunc
