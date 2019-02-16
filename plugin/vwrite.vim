@@ -12,17 +12,17 @@ set spell spelllang=en_gb
  
 inoremap <CR> <C-o>:call ProcessEnter()<CR>
 
-nnoremap <silent> <TAB> :call IncreaseListingLevel()<CR>
+nnoremap <silent> <TAB> :call ProcessTabs()<CR>
 nnoremap <silent> <S-TAB> :call DecreaseListingLevel()<CR>
 
 command! -nargs=1 Heading call CreateHeading(<f-args>)
 command! -nargs=1 BulletSelect call SelectBulletType(<f-args>)
+command! InitTable call InitTable()
 
 func! ProcessEnter()
 	if g:table == 1
 		call Tabulate()
-	endif
-	if g:listing >= 1
+	elseif g:listing >= 1
 		call Bullets()
 	endif
 	if g:listing == 0 && g:table == 0
@@ -30,6 +30,25 @@ func! ProcessEnter()
 	endif
 endfunc
 
+func! ProcessTabs()
+	if g:table == 1
+		call DCDriver()
+		startgreplace
+	else
+		call IncreaseListingLevel()
+	endif
+endfunc
+
+
+func! ProcessSTabs()
+	if g:table == 1
+		let g:table = 0
+		execute "normal! A\n"
+	endif
+	if g:listing >= 1
+		call DecreaseListingLevel()
+	endif
+endfunc
 func! CreateHeading(lvl)
 	execute "normal! yy"
 	if a:lvl ==# 1
@@ -87,7 +106,6 @@ endfunc
 
 func! DrawNewColumn()
 	let l:i = 1
-	let g:table_columns += 1
 	execute "normal! A---"
 	while l:i < g:cell_width
 		execute "normal! A----"
@@ -113,22 +131,30 @@ func! DrawNewColumn()
 		let l:i += 1
 	endwhile
 	execute "normal! A+\<ESC>khh"
+endfunc
+
+func! DCDriver()
+	execute "normal! k"
+	call DrawNewColumn()
 	startgreplace
+	let g:table_columns += 1
 endfunc
 
 func! DrawNewRow()
 	let l:i = 0
+	execute "normal! j"
 	execute "normal! 0ld$"
 	while l:i < g:cell_height
 		execute "normal! o|"
 		let l:i += 1
 	endwhile
 	execute "normal! o+"
-	execute "normal! 1k"
+	execute "normal! k"
 	execute "normal! " . g:cell_height . "k"
 	let l:i = 0
 	while l:i < g:table_columns
 		call DrawNewColumn()
+		execute "normal! k"
 		let l:i += 1
 	endwhile
 endfunc
@@ -141,5 +167,9 @@ func! Tabulate()
 		startgreplace
 		let g:table_columns = 1
 		let g:table_rows = 1
+	else
+		call DrawNewRow()
+		execute "normal! j0l"
+		startgreplace
 	endif
 endfunc
