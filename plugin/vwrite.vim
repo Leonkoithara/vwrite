@@ -1,14 +1,16 @@
 let g:listing = 0 
+let g:bullet_type = "-"
 
 set nonumber norelativenumber
 set spell spelllang=en_gb
  
-inoremap <CR> <C-o>:call Bullets(0)<CR>
+inoremap <CR> <C-o>:call Bullets()<CR>
 
 nnoremap <silent> <TAB> :call IncreaseListingLevel()<CR>
 nnoremap <silent> <S-TAB> :call DecreaseListingLevel()<CR>
 
 command! -nargs=1 Heading call CreateHeading(<f-args>)
+command! -nargs=1 BulletSelect call SelectBulletType(<f-args>)
 
 func! CreateHeading(lvl)
 	execute "normal! yy"
@@ -30,23 +32,18 @@ func! IncreaseListingLevel()
 	let g:listing = g:listing + 1
 endfunc
 
-func! Bullets(type)
+func! SelectBulletType(type)
+	let g:bullet_type = a:type
+endfunc
+
+func! Bullets()
 	execute "normal! gi\n"
 	let l:i = 0
 	while i < g:listing
 		execute "normal! gi\t"
 		let l:i = l:i + 1
 	endwhile
-	if a:type == 1
-		execute "normal! gi\t* "
-		let g:listing = g:listing + 1
-	else
-		if g:listing > 0
-			execute "normal! gi* "
-		endif
+	if g:listing > 0
+		execute "normal! gi" . g:bullet_type . " "
 	endif
-endfunc
-
-func! EchoListing()
-	:echo g:listing
 endfunc
