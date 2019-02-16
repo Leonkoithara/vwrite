@@ -1,6 +1,6 @@
 # vnotes
 
-##Introduction
+## Introduction
 
 This is a vim plugin to write books and to take notes. Although currently it is not as 
 flexible as the plugins for the sum of its parts offer it works in vanilla vim editions
