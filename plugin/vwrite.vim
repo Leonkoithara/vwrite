@@ -13,11 +13,24 @@ set spell spelllang=en_gb
 inoremap <CR> <C-o>:call ProcessEnter()<CR>
 
 nnoremap <silent> <TAB> :call ProcessTabs()<CR>
-nnoremap <silent> <S-TAB> :call DecreaseListingLevel()<CR>
+nnoremap <silent> <S-TAB> :call ProcessSTabs()<CR>
+
+lmap <silent> <TAB> <C-o>:call NxtCol()<CR>
 
 command! -nargs=1 Heading call CreateHeading(<f-args>)
 command! -nargs=1 BulletSelect call SelectBulletType(<f-args>)
 command! InitTable call InitTable()
+
+let timer = timer_start(1000, 'EnterOnLineEnd', {'repeat':-1})
+func! EnterOnLineEnd(timer)
+	if(col('.') > 90)
+		while(col('.') > 90)
+			execute "normal! b"
+		endwhile
+		execute "normal! d$o"
+		execute "normal! p"
+	endif
+endfunc
 
 func! ProcessEnter()
 	if g:table == 1
@@ -34,21 +47,20 @@ func! ProcessTabs()
 	if g:table == 1
 		call DCDriver()
 		startgreplace
-	else
+	elseif g:listing == 1
 		call IncreaseListingLevel()
 	endif
 endfunc
-
 
 func! ProcessSTabs()
 	if g:table == 1
 		let g:table = 0
 		execute "normal! A\n"
-	endif
-	if g:listing >= 1
+	elseif g:listing >= 1
 		call DecreaseListingLevel()
 	endif
 endfunc
+
 func! CreateHeading(lvl)
 	execute "normal! yy"
 	if a:lvl ==# 1
@@ -62,7 +74,9 @@ func! CreateHeading(lvl)
 endfunc
 
 func! DecreaseListingLevel()
-	let g:listing = g:listing - 1
+	if g:listing > 0
+		let g:listing = g:listing - 1
+	endif
 endfunc
 
 func! IncreaseListingLevel()
@@ -85,13 +99,6 @@ func! Bullets()
 	endif
 endfunc
 
-func! InitTable()
-	let g:table = 1
-	let g:cell_width = 2
-	let g:cell_height = 1
-	call Tabulate()
-endfunc
-
 func! AddColumn()
 	let g:table_columns = g:table_columns + 1
 endfunc
@@ -102,6 +109,20 @@ endfunc
  
 func! IncreaseCellHeight()
 	let g:cell_height = g:cell_height + 1
+endfunc
+
+func! InitTable()
+	let g:table = 1
+	let g:cell_width = 2
+	let g:cell_height = 1
+	call Tabulate()
+endfunc
+
+func! DCDriver()
+	execute "normal! k"
+	call DrawNewColumn()
+	startgreplace
+	let g:table_columns += 1
 endfunc
 
 func! DrawNewColumn()
@@ -131,13 +152,6 @@ func! DrawNewColumn()
 		let l:i += 1
 	endwhile
 	execute "normal! A+\<ESC>khh"
-endfunc
-
-func! DCDriver()
-	execute "normal! k"
-	call DrawNewColumn()
-	startgreplace
-	let g:table_columns += 1
 endfunc
 
 func! DrawNewRow()
@@ -172,4 +186,18 @@ func! Tabulate()
 		execute "normal! j0l"
 		startgreplace
 	endif
+endfunc
+
+func! EndTable()
+	execute "normal! jA\n"
+	let g:table = 0
+	let g:table_columns = 0
+	let g:table_rows = 0
+	let g:cell_width = 0
+	let g:cell_height = 0
+endfunc
+
+func! NxtCol()
+	execute "normal! jf+kl"
+	startgreplace
 endfunc
