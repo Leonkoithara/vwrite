@@ -1,10 +1,11 @@
-# vnotes
+# vwrite
 
 ## Introduction
 
 This is a vim plugin to write books and to take notes. Although currently it is not as 
 flexible as the plugins for the sum of its parts offer it works in vanilla vim editions
-with no additional functionalities required.
+with no additional functionalities required. I have tried to keep it extremely
+lightweight all the while supporting many useful features.
 
 ## Installations
 

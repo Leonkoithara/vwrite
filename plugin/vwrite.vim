@@ -28,7 +28,7 @@ func! EnterOnLineEnd(timer)
 			execute "normal! b"
 		endwhile
 		execute "normal! d$o"
-		execute "normal! p"
+		execute "normal! pA"
 	endif
 endfunc
 
