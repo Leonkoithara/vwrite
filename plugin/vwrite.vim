@@ -18,6 +18,7 @@ nnoremap <silent> <S-TAB> :call ProcessSTabs()<CR>
 lmap <silent> <TAB> <C-o>:call NxtCol()<CR>
 
 command! -nargs=1 Heading call CreateHeading(<f-args>)
+command! Listing call CreateListing()
 command! -nargs=1 BulletSelect call SelectBulletType(<f-args>)
 command! InitTable call InitTable()
 
@@ -47,7 +48,7 @@ func! ProcessTabs()
 	if g:table == 1
 		call DCDriver()
 		startgreplace
-	elseif g:listing == 1
+	elseif g:listing >= 1
 		call IncreaseListingLevel()
 	endif
 endfunc
@@ -71,6 +72,10 @@ func! CreateHeading(lvl)
 		execute "normal! 0i###"
 	endif
 	startinsert!
+endfunc
+
+func! CreateListing()
+	call IncreaseListingLevel()
 endfunc
 
 func! DecreaseListingLevel()
