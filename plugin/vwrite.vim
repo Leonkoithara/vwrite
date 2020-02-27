@@ -55,8 +55,7 @@ endfunc
 
 func! ProcessSTabs()
 	if g:table == 1
-		let g:table = 0
-		execute "normal! A\n"
+		call EndTable()
 	elseif g:listing >= 1
 		call DecreaseListingLevel()
 	endif
@@ -194,12 +193,13 @@ func! Tabulate()
 endfunc
 
 func! EndTable()
-	execute "normal! jA\n"
+	execute "normal! Go"
 	let g:table = 0
 	let g:table_columns = 0
 	let g:table_rows = 0
 	let g:cell_width = 0
 	let g:cell_height = 0
+	startinsert
 endfunc
 
 func! NxtCol()
